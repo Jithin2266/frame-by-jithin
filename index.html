@@ -644,10 +644,14 @@ function initScroll(){
   const fl=document.getElementById('floatImg'),flI=fl.querySelector('img');
   if(fine){const fx=gsap.quickTo(fl,'x',{duration:.6,ease:'power3'}),fy=gsap.quickTo(fl,'y',{duration:.6,ease:'power3'});
     document.querySelectorAll('.srv').forEach(s=>{
-      s.addEventListener('mouseenter',()=>{flI.src=s.dataset.img;gsap.to(fl,{opacity:1,scale:1,rotate:-4,duration:.5,ease:'power3.out'});});
-      s.addEventListener('mouseleave',()=>gsap.to(fl,{opacity:0,scale:.6,rotate:0,duration:.4}));
+      s.addEventListener('mouseenter',e=>{flI.src=s.dataset.img;gsap.set(fl,{x:e.clientX,y:e.clientY});gsap.to(fl,{opacity:1,scale:1,rotate:-4,duration:.5,ease:'power3.out',overwrite:'auto'});});
+      s.addEventListener('mouseleave',()=>gsap.to(fl,{opacity:0,scale:.6,rotate:0,duration:.4,overwrite:'auto'}));
       s.addEventListener('mousemove',e=>{fx(e.clientX);fy(e.clientY);});
-    });}
+    });
+    const hideFl=()=>gsap.to(fl,{opacity:0,scale:.6,rotate:0,duration:.3,overwrite:'auto'});
+    ScrollTrigger.create({trigger:'#services',start:'top bottom',end:'bottom top',onLeave:hideFl,onLeaveBack:hideFl});
+    addEventListener('scroll',()=>{const el=document.elementFromPoint(mx,my);if(!el||!el.closest('.srv'))hideFl();},{passive:true});
+  }
 
   /* about */
   gsap.from('#aboutCard',{rotationY:-30,rotationX:10,y:80,opacity:0,transformPerspective:1000,duration:1.6,ease:'expo.out',scrollTrigger:{trigger:'#about',start:'top 70%'}});
